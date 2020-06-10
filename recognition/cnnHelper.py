@@ -40,8 +40,11 @@ def load_datasets(path, variant):
     train_set = torchvision.datasets.ImageFolder(
         root=path+f'classification_{variant}',  transform=train_transform)
 
-    splitted_train_set, splitted_val_set = train_test_split(train_set, train_set.targets,
-                                                            test_size=0.2)
+    indices = list(range(len(train_set)))
+    train_index, val_index, train_target, val_target = train_test_split(indices, train_set.targets,
+                                                                        stratify=train_set.targets, test_size=0.2)
+    splitted_train_set = torch.utils.data.Subset(train_set, train_index)
+    splitted_val_set = torch.utils.data.Subset(train_set, val_index)
 
     return splitted_train_set, splitted_val_set, len(train_set.classes), train_set.classes
 
