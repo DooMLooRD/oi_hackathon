@@ -60,7 +60,7 @@ def main():
         current_epoch += 1
 
         train_result, train_time = train_model(model, train_loader, criterion, optimizer,
-                                               num_classes, 'TRAIN')
+                                               num_classes, 'Training')
         val_result, val_time = val_model(model, val_loader, criterion,
                                          num_classes)
 

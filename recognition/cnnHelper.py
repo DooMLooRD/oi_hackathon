@@ -50,7 +50,7 @@ def load_datasets(path, variant):
 
 
 def init_train_loaders(train_set, val_set, batch_size):
-    train_loader = torch.utils.data.DataLoader(train_set, pin_memory=True,
+    train_loader = torch.utils.data.DataLoader(train_set, pin_memory=False,
                                                batch_size=batch_size,
                                                shuffle=True)
 

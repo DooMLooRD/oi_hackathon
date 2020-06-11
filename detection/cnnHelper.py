@@ -38,7 +38,7 @@ def load_datasets(path, variant):
 
 
 def init_train_loaders(train_set, val_set, batch_size):
-    train_loader = torch.utils.data.DataLoader(train_set, pin_memory=True,
+    train_loader = torch.utils.data.DataLoader(train_set, pin_memory=False,
                                                batch_size=batch_size,
                                                shuffle=True)
 
@@ -81,6 +81,7 @@ def train_model(model, training_loader, criterion, optimizer, progress_title):
     running_loss = 0.0
     running_corrects = 0
 
+    print()
     printProgressBar(progress_title, 0, len(training_loader), length=50)
 
     for i, (inputs, labels) in enumerate(training_loader, 0):
@@ -104,6 +105,7 @@ def train_model(model, training_loader, criterion, optimizer, progress_title):
     print()
 
     time_elapsed = time.time() - since
+    print('-' * 10)
     print('Training Loss: {:.4f} Time: {:.0f}m {:.0f}s'.format(
         epoch_loss, time_elapsed // 60, time_elapsed % 60))
 
@@ -135,6 +137,6 @@ def val_model(model, val_loader, criterion):
 
     print('Val Loss: {:.4f} Time: {:.0f}m {:.0f}s'.format(
         epoch_loss, time_elapsed // 60, time_elapsed % 60))
-    print()
+    print('-' * 10)
 
     return epoch_loss, time_elapsed

@@ -25,7 +25,7 @@ class ResultData:
                               sort_keys=True, indent=4)
             json_file.write(data)
 
-        with open(f'{self.filename}.txt', 'w+') as text_file:
+        with open(f'{self.filename}.txt', 'a+') as text_file:
             text_file.write(
                 '\n Epoch {} - Time summary: {:.0f}m {:.0f}s'.format(len(self.val_history),
                                                                      self.time // 60, self.time % 60))

@@ -19,8 +19,8 @@ def main():
     torch.cuda.empty_cache()
 
     data_path = 'train\\'
-    num_epochs = 25
-    batch_size = 28
+    num_epochs = 50
+    batch_size = 64
     variant = 1
     filedirectory = f'results_{variant}'
     filename = 'result'
@@ -43,8 +43,8 @@ def main():
     model.cuda()
 
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
-    # optimizer = optim.Adadelta(model.parameters(), lr=1, rho=0.8)
+    # optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adadelta(model.parameters(), lr=1, rho=0.8)
 
     result_data = ResultData(
         f'{filedirectory}/{filename}')
@@ -62,13 +62,12 @@ def main():
         epoch_val_results = []
 
         train_result, train_time = train_model(
-            model, train_loader, criterion, optimizer, '|Train|')
+            model, train_loader, criterion, optimizer, 'Training')
         val_result, train_time = val_model(
             model, val_loader, criterion)
 
         result_data.time += train_time
 
-        print('-' * 10)
         print()
 
         best_model_wts, improved = log_result(
