@@ -18,8 +18,8 @@ def save_plots(train_history, val_history, num_epochs, ticks, filedirectory):
 
 
 def display_plot_loss(train_history, val_history, num_epochs, ticks, filedirectory):
-    ohist = list(map(lambda x: x.loss, train_history[::int(ticks)]))
-    shist = list(map(lambda x: x.loss, val_history[::int(ticks)]))
+    ohist = list(map(lambda x: x, train_history[::int(ticks)]))
+    shist = list(map(lambda x: x, val_history[::int(ticks)]))
 
     plt.title("Loss vs. Number of Epochs")
     plt.xlabel("Epochs")
@@ -33,7 +33,7 @@ def display_plot_loss(train_history, val_history, num_epochs, ticks, filedirecto
 
 
 def display_train_plot_loss(train_history, num_epochs, ticks, filedirectory, label):
-    ohist = list(map(lambda x: x.loss, train_history[::int(ticks)]))
+    ohist = list(map(lambda x: x, train_history[::int(ticks)]))
 
     plt.title("Loss vs. Number of Epochs")
     plt.xlabel("Epochs")
@@ -46,7 +46,7 @@ def display_train_plot_loss(train_history, num_epochs, ticks, filedirectory, lab
 
 
 def display_val_plot_loss(val_history, num_epochs, ticks, filedirectory):
-    ohist = list(map(lambda x: x.loss, val_history[::int(ticks)]))
+    ohist = list(map(lambda x: x, val_history[::int(ticks)]))
 
     plt.title("Loss vs. Number of Epochs")
     plt.xlabel("Epochs")

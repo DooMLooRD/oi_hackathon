@@ -19,12 +19,12 @@ def main():
     torch.cuda.empty_cache()
 
     data_path = 'train\\'
-    num_epochs = 50
-    batch_size = 64
+    num_epochs = 300
+    batch_size = 32
     variant = 1
     filedirectory = f'results_{variant}'
     filename = 'result'
-    max_no_improv_epochs = 5
+    max_no_improv_epochs = 20
 
     Path(f'{filedirectory}/images_best').mkdir(parents=True, exist_ok=True)
 
