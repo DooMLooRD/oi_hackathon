@@ -18,7 +18,7 @@ ctypes.cdll.LoadLibrary('caffe2_nvrtc.dll')
 def main():
     torch.cuda.empty_cache()
 
-    data_path = 'train\\'
+    data_path = 'D:\\GITHUB\\OI_HACKATHON\\recognition\\train\\'
     num_epochs = 200
     batch_size = 64
     variant = 1
@@ -33,6 +33,9 @@ def main():
     downloadData = input('Do you want to extract data? [Y/N]: ')
     if downloadData.lower() == 'y':
         dataService.getData()
+    augmentData = input('Do you want to augment the data? [Y/N]: ')
+    if augmentData.lower() == 'y':
+        dataService.augmentData()
 
     train_set, val_set, num_classes, classes = load_datasets(
         data_path, variant)

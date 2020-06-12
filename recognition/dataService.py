@@ -3,6 +3,7 @@ import shutil
 import os
 from PIL import Image, ImageEnhance
 import cv2
+import random
 
 
 class DataService:
@@ -52,3 +53,46 @@ class DataService:
                     else:
                         pilimg.save(
                             f'{self.classification_path_2}\\yes\\{counter}.png')
+
+    def augmentData(self):
+        for i in range(2):
+            if i == 0:
+                imagePath = self.classification_path_1
+            if i == 1:
+                imagePath = self.classification_path_2
+
+            self.augment(imagePath + '\\yes\\', imagePath + '\\no\\')
+            print('ALL DONE. GLHF my friend')
+
+    def augment(self, pathToMatch, pathToAugment):
+        print(f'Augumenting data for path: {pathToAugment}')
+        filesInAugment = os.listdir(pathToAugment)
+        numOfAugment = len(filesInAugment)
+
+        numOfMatch = len(os.listdir(pathToMatch))
+
+        print(f'Files in folder to augment: {numOfAugment}')
+        print(f'Files in folder to match: {numOfMatch}')
+
+        fileNumber = 1
+        fileIndex = 0
+
+        while numOfAugment < numOfMatch:
+            im = Image.open(pathToAugment + filesInAugment[fileIndex])
+            enhancer = ImageEnhance.Contrast(im)
+
+            ratio = random.uniform(0.5, 1.5)
+            rotateAngle = random.uniform(-15.0, 15.0)
+            im_out = enhancer.enhance(ratio)
+
+            im_out = im_out.rotate(rotateAngle)
+
+            im_out.save(
+                pathToAugment + f'{fileNumber}{os.path.splitext(pathToAugment + filesInAugment[fileIndex])[1]}')
+
+            fileNumber += 1
+            fileIndex += 1
+            numOfAugment += 1
+
+            if fileIndex >= len(filesInAugment):
+                fileIndex = 0
