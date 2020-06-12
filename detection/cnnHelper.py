@@ -61,7 +61,7 @@ def log_result(model, result_data, best_model_wts, epoch_train, epoch_val):
     return best_model_wts, improved
 
 
-def checkImprovement(improved, no_improv_epochs, max_no_improv_epochs):
+def check_improvement(improved, no_improv_epochs, max_no_improv_epochs):
     should_stop = False
     if(improved):
         no_improv_epochs = 0

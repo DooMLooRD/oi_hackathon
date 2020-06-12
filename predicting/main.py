@@ -11,7 +11,7 @@ import argparse
 from detectionConvNetwork import DetectionConvNetwork
 
 
-def loadModels():
+def load_models():
     device = torch.device('cpu')
 
     bot_detection_model = DetectionConvNetwork()
@@ -28,7 +28,7 @@ def loadModels():
     return bot_detection_model, top_detection_model
 
 
-def initDataLoader():
+def init_data_loader():
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
@@ -39,7 +39,7 @@ def initDataLoader():
     return transform
 
 
-def logpoints(bot_keypoints, top_keypoints):
+def log_points(bot_keypoints, top_keypoints):
     x_bot = '#'
     y_bot = '#'
     x_top = '#'
@@ -58,7 +58,7 @@ def logpoints(bot_keypoints, top_keypoints):
     print(f'{x_bot};{y_bot};{x_top};{y_top}')
 
 
-def showpoints(frame, bot_keypoints, top_keypoints, index, out):
+def show_points(frame, bot_keypoints, top_keypoints, index, out):
     if bot_keypoints != None:
         bot_keypoints = bot_keypoints.data.numpy()
         x_bot = int(bot_keypoints[0][0].item() * 640)
@@ -77,7 +77,7 @@ def showpoints(frame, bot_keypoints, top_keypoints, index, out):
     image.save(f'results\\frames\\{index}.png')
 
 
-def initLogging(vid):
+def init_logging(vid):
     Path('results\\video').mkdir(parents=True, exist_ok=True)
     Path('results\\frames').mkdir(parents=True, exist_ok=True)
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -90,10 +90,10 @@ def initLogging(vid):
 def main(args):
     vid = cv2.VideoCapture(args['filename'])
     if args['verbose']:
-        out = initLogging(vid)
+        out = init_logging(vid)
 
-    bot_detection_model, top_detection_model = loadModels()
-    transform = initDataLoader()
+    bot_detection_model, top_detection_model = load_models()
+    transform = init_data_loader()
     counter = 1
 
     while(True):
@@ -114,10 +114,10 @@ def main(args):
             top_keypoints = top_detection_model(transform(
                 image).unsqueeze(1).permute(1, 0, 2, 3))
 
-        # logpoints(bot_keypoints, top_keypoints)
+        # log_points(bot_keypoints, top_keypoints)
 
         if args['verbose']:
-            showpoints(frame, bot_keypoints, top_keypoints, counter, out)
+            show_points(frame, bot_keypoints, top_keypoints, counter, out)
         counter += 1
 
 

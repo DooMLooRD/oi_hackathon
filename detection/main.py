@@ -5,7 +5,7 @@ import copy
 from pathlib import Path
 
 from cnnHelper import train_model, val_model, init_train_loaders
-from cnnHelper import init_model, load_datasets, checkImprovement, log_result
+from cnnHelper import init_model, load_datasets, check_improvement, log_result
 from statisticsHelper import save_plots
 from resultData import ResultData
 
@@ -21,7 +21,7 @@ def main():
     data_path = 'train\\'
     num_epochs = 300
     batch_size = 32
-    variant = 2
+    variant = 1
     filedirectory = f'results_{variant}'
     filename = 'result'
     max_no_improv_epochs = 50
@@ -32,7 +32,7 @@ def main():
 
     extractData = input('Do you want to extract data? [Y/N]: ')
     if extractData.lower() == 'y':
-        dataService.getData()
+        dataService.get_data()
 
     train_set, val_set = load_datasets(data_path, variant)
 
@@ -40,7 +40,6 @@ def main():
         train_set, val_set, batch_size)
 
     model = init_model()
-    model.load_state_dict(torch.load('best_model.pt'))
     model.cuda()
 
     criterion = nn.MSELoss()
@@ -78,7 +77,7 @@ def main():
                    F'{filedirectory}/{epoch+1}_model.pt')
 
         # Early stopping
-        no_improv_epochs, shold_stop = checkImprovement(
+        no_improv_epochs, shold_stop = check_improvement(
             improved, no_improv_epochs, max_no_improv_epochs)
 
         if(shold_stop):

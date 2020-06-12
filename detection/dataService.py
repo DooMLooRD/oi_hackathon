@@ -21,7 +21,7 @@ class DataService:
         Path(self.detection_frames_path_1).mkdir(parents=True, exist_ok=True)
         Path(self.detection_frames_path_2).mkdir(parents=True, exist_ok=True)
 
-    def getData(self):
+    def get_data(self):
         vid_dir = self.dir_path+'\\video'
         box_dir = self.dir_path+'\\bboxes'
         vid_files = os.listdir(vid_dir)
