@@ -88,7 +88,7 @@ class DataService:
             im_out = im_out.rotate(rotateAngle)
 
             im_out.save(
-                pathToAugment + f'{fileNumber}{os.path.splitext(pathToAugment + filesInAugment[fileIndex])[1]}')
+                pathToAugment + f'aug_{fileNumber}{os.path.splitext(pathToAugment + filesInAugment[fileIndex])[1]}')
 
             fileNumber += 1
             fileIndex += 1
