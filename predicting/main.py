@@ -12,39 +12,65 @@ from detectionConvNetwork import DetectionConvNetwork
 
 
 def loadModels():
-    model = DetectionConvNetwork()
     device = torch.device('cpu')
-    model.load_state_dict(torch.load(
-        'model\\best_model_157_normalization.pt', map_location=device))
-    model.eval()
 
-    return model
+    bot_detection_model = DetectionConvNetwork()
+    top_detection_model = DetectionConvNetwork()
+
+    bot_detection_model.load_state_dict(torch.load(
+        'model\\bot_detection_model.pt', map_location=device))
+    top_detection_model.load_state_dict(torch.load(
+        'model\\top_detection_model.pt', map_location=device))
+
+    bot_detection_model.eval()
+    top_detection_model.eval()
+
+    return bot_detection_model, top_detection_model
 
 
 def initDataLoader():
-    train_transform = transforms.Compose([
+    transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[
             0.229, 0.224, 0.225])
     ])
 
-    return train_transform
+    return transform
 
 
-def logpoints(keypoints):
-    keypoints = keypoints.data.numpy()
-    x = int(keypoints[0][0].item() * 640)
-    y = int(keypoints[0][1].item() * 360)
-    print(f'{x};{y}')
+def logpoints(bot_keypoints, top_keypoints):
+    x_bot = '#'
+    y_bot = '#'
+    x_top = '#'
+    y_top = '#'
+
+    if bot_keypoints != None:
+        bot_keypoints = bot_keypoints.data.numpy()
+        x_bot = int(bot_keypoints[0][0].item() * 640)
+        y_bot = int(bot_keypoints[0][1].item() * 360)
+
+    if top_keypoints != None:
+        top_keypoints = top_keypoints.data.numpy()
+        x_top = int(top_keypoints[0][0].item() * 640)
+        y_top = int(top_keypoints[0][1].item() * 360)
+
+    print(f'{x_bot};{y_bot};{x_top};{y_top}')
 
 
-def showpoints(frame, keypoints, index, out):
-    keypoints = keypoints.data.numpy()
-    x = int(keypoints[0][0].item() * 640)
-    y = int(keypoints[0][1].item() * 360)
+def showpoints(frame, bot_keypoints, top_keypoints, index, out):
+    if bot_keypoints != None:
+        bot_keypoints = bot_keypoints.data.numpy()
+        x_bot = int(bot_keypoints[0][0].item() * 640)
+        y_bot = int(bot_keypoints[0][1].item() * 360)
+        cv2.circle(frame, (x_bot, y_bot), 5, (0, 0, 255), -1)
 
-    cv2.circle(frame, (x, y), 5, (0, 0, 255), -1)
+    if top_keypoints != None:
+        top_keypoints = top_keypoints.data.numpy()
+        x_top = int(top_keypoints[0][0].item() * 640)
+        y_top = int(top_keypoints[0][1].item() * 360)
+        cv2.circle(frame, (x_top, y_top), 5, (255, 0, 0), -1)
+
     out.write(frame)
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     image = Image.fromarray(frame)
@@ -66,7 +92,7 @@ def main(args):
     if args['verbose']:
         out = initLogging(vid)
 
-    model = loadModels()
+    bot_detection_model, top_detection_model = loadModels()
     transform = initDataLoader()
     counter = 1
 
@@ -76,11 +102,22 @@ def main(args):
             break
         converted_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image = Image.fromarray(converted_frame)
-        keypoints = model(transform(
-            image).unsqueeze(1).permute(1, 0, 2, 3))
-        # logpoints(keypoints)
+
+        bot_keypoints = None
+        top_keypoints = None
+
+        if True:
+            bot_keypoints = bot_detection_model(transform(
+                image).unsqueeze(1).permute(1, 0, 2, 3))
+
+        if True:
+            top_keypoints = top_detection_model(transform(
+                image).unsqueeze(1).permute(1, 0, 2, 3))
+
+        # logpoints(bot_keypoints, top_keypoints)
+
         if args['verbose']:
-            showpoints(frame, keypoints, counter, out)
+            showpoints(frame, bot_keypoints, top_keypoints, counter, out)
         counter += 1
 
 
