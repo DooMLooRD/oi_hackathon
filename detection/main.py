@@ -21,12 +21,12 @@ def main():
     data_path = 'train\\'
     num_epochs = 300
     batch_size = 32
-    variant = 1
+    variant = 2
     filedirectory = f'results_{variant}'
     filename = 'result'
-    max_no_improv_epochs = 20
+    max_no_improv_epochs = 50
 
-    Path(f'{filedirectory}/images_best').mkdir(parents=True, exist_ok=True)
+    Path(filedirectory).mkdir(parents=True, exist_ok=True)
 
     dataService = DataService(data_path)
 
@@ -40,6 +40,7 @@ def main():
         train_set, val_set, batch_size)
 
     model = init_model()
+    model.load_state_dict(torch.load('best_model.pt'))
     model.cuda()
 
     criterion = nn.MSELoss()
@@ -63,10 +64,10 @@ def main():
 
         train_result, train_time = train_model(
             model, train_loader, criterion, optimizer, 'Training')
-        val_result, train_time = val_model(
+        val_result, val_time = val_model(
             model, val_loader, criterion)
 
-        result_data.time += train_time
+        result_data.time += train_time + val_time
 
         print()
 
@@ -93,7 +94,7 @@ def main():
     result_data.print_best()
 
     save_plots(result_data.train_history, result_data.val_history,
-               current_epoch, int(current_epoch/10), filedirectory)
+               current_epoch, 1, filedirectory)
 
 
 if __name__ == '__main__':

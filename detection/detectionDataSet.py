@@ -27,11 +27,11 @@ class DetectionDataSet(Dataset):
         width, height = frame.size
         for i in range(len(target)):
             target_val = target[i]
-            # if i % 2 == 0:
-            #     target_val = target_val/width
-            # else:
-            #     target_val = target_val/height
-            points.append(int(target_val))
+            if i % 2 == 0:
+                target_val = float(target_val)/width
+            else:
+                target_val = float(target_val)/height
+            points.append(target_val)
 
         position = torch.as_tensor(points, dtype=torch.float32)
         image_id = torch.tensor([idx])

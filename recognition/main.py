@@ -93,7 +93,7 @@ def main():
     extract_conf_matrix(result_data.val_best.cm, num_classes, classes)
 
     save_plots(result_data.train_history, result_data.val_history,
-               current_epoch, int(current_epoch/10), filedirectory)
+               current_epoch, 1, filedirectory)
 
 
 if __name__ == '__main__':

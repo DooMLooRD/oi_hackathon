@@ -126,3 +126,5 @@ dmypy.json
 
 results*/
 train/
+predicting/data
+predicting/model
