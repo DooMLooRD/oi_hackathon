@@ -7,6 +7,8 @@ import cv2
 import torchvision.transforms as transforms
 from pathlib import Path
 import argparse
+import torchvision
+import torch.nn as nn
 
 from detectionConvNetwork import DetectionConvNetwork
 
@@ -17,15 +19,28 @@ def load_models():
     bot_detection_model = DetectionConvNetwork()
     top_detection_model = DetectionConvNetwork()
 
+    bot_recognition_model = torchvision.models.resnet18()
+    bot_recognition_model.fc = nn.Linear(512, 2)
+    top_recognition_model = torchvision.models.resnet18()
+    top_recognition_model.fc = nn.Linear(512, 2)
+
     bot_detection_model.load_state_dict(torch.load(
         'model\\bot_detection_model.pt', map_location=device))
     top_detection_model.load_state_dict(torch.load(
         'model\\top_detection_model.pt', map_location=device))
 
+    bot_recognition_model.load_state_dict(torch.load(
+        'model\\bot_recognition_model.pt', map_location=device))
+    top_recognition_model.load_state_dict(torch.load(
+        'model\\top_recognition_model.pt', map_location=device))
+
     bot_detection_model.eval()
     top_detection_model.eval()
 
-    return bot_detection_model, top_detection_model
+    bot_recognition_model.eval()
+    top_recognition_model.eval()
+
+    return bot_detection_model, top_detection_model, bot_recognition_model, top_recognition_model
 
 
 def init_data_loader():
@@ -92,7 +107,7 @@ def main(args):
     if args['verbose']:
         out = init_logging(vid)
 
-    bot_detection_model, top_detection_model = load_models()
+    bot_detection_model, top_detection_model, bot_recognition_model, top_recognition_model = load_models()
     transform = init_data_loader()
     counter = 1
 
@@ -102,19 +117,21 @@ def main(args):
             break
         converted_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image = Image.fromarray(converted_frame)
+        transformed_image = transform(image).unsqueeze(1).permute(1, 0, 2, 3)
 
         bot_keypoints = None
         top_keypoints = None
 
-        if True:
-            bot_keypoints = bot_detection_model(transform(
-                image).unsqueeze(1).permute(1, 0, 2, 3))
+        bot_recognized = bot_recognition_model(transformed_image)
+        top_recognized = top_recognition_model(transformed_image)
 
-        if True:
-            top_keypoints = top_detection_model(transform(
-                image).unsqueeze(1).permute(1, 0, 2, 3))
+        if torch.argmax(bot_recognized, 1).item() == 1:
+            bot_keypoints = bot_detection_model(transformed_image)
 
-        # log_points(bot_keypoints, top_keypoints)
+        if torch.argmax(top_recognized, 1).item() == 1:
+            top_keypoints = top_detection_model(transformed_image)
+
+        log_points(bot_keypoints, top_keypoints)
 
         if args['verbose']:
             show_points(frame, bot_keypoints, top_keypoints, counter, out)

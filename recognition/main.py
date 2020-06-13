@@ -18,10 +18,10 @@ ctypes.cdll.LoadLibrary('caffe2_nvrtc.dll')
 def main():
     torch.cuda.empty_cache()
 
-    data_path = 'D:\\GITHUB\\OI_HACKATHON\\recognition\\train\\'
+    data_path = 'train\\'
     num_epochs = 200
     batch_size = 64
-    variant = 1
+    variant = 2
     filedirectory = f'results_{variant}'
     filename = 'result'
     max_no_improv_epochs = 20
