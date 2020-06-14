@@ -25,14 +25,14 @@ def load_models():
     top_recognition_model.fc = nn.Linear(512, 2)
 
     bot_detection_model.load_state_dict(torch.load(
-        'model\\bot_detection_model.pt', map_location=device))
+        'model/bot_detection_model.pt', map_location=device))
     top_detection_model.load_state_dict(torch.load(
-        'model\\top_detection_model.pt', map_location=device))
+        'model/top_detection_model.pt', map_location=device))
 
     bot_recognition_model.load_state_dict(torch.load(
-        'model\\bot_recognition_model.pt', map_location=device))
+        'model/bot_recognition_model.pt', map_location=device))
     top_recognition_model.load_state_dict(torch.load(
-        'model\\top_recognition_model.pt', map_location=device))
+        'model/top_recognition_model.pt', map_location=device))
 
     bot_detection_model.eval()
     top_detection_model.eval()
@@ -89,16 +89,16 @@ def show_points(frame, bot_keypoints, top_keypoints, index, out):
     out.write(frame)
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     image = Image.fromarray(frame)
-    image.save(f'results\\frames\\{index}.png')
+    image.save(f'results/frames/{index}.png')
 
 
 def init_logging(vid):
-    Path('results\\video').mkdir(parents=True, exist_ok=True)
-    Path('results\\frames').mkdir(parents=True, exist_ok=True)
+    Path('results/video').mkdir(parents=True, exist_ok=True)
+    Path('results/frames').mkdir(parents=True, exist_ok=True)
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     frame_width = int(vid.get(3))
     frame_height = int(vid.get(4))
-    return cv2.VideoWriter('results\\video\\output.mp4', fourcc, 24.0,
+    return cv2.VideoWriter('results/video/output.mp4', fourcc, 24.0,
                            (frame_width, frame_height))
 
 
@@ -115,9 +115,16 @@ def main(args):
         ret, frame = vid.read()
         if not ret:
             break
+
         converted_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image = Image.fromarray(converted_frame)
         transformed_image = transform(image).unsqueeze(1).permute(1, 0, 2, 3)
+
+        if counter == 1:
+            counter += 1
+            position = args['position'].replace('\n', '').split(';')
+            print(f'{position[0]};{position[1]};{position[2]};{position[3]}')
+            continue
 
         bot_keypoints = None
         top_keypoints = None
@@ -142,6 +149,8 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument("-f", "--filename", type=str, required=True,
                     help="filename")
+    ap.add_argument("-p", "--position", type=str, required=True,
+                    help="position")
     ap.add_argument("-v", "--verbose", dest='verbose',
                     action='store_true', default=False)
     args = vars(ap.parse_args())
